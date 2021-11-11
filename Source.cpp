@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cstddef>
 #include <cstring>
 #include <algorithm>
@@ -13,7 +13,7 @@ class Student
 private:
 
     string name, surname;
-    vector <int> nd;
+    vector <double> nd;
     int egz, avg;
     double galutinis;
 
@@ -28,7 +28,7 @@ public:
         : Student(s, strlen(s) + 1)
     {}
 
-    Student(string gname, string gsurname, vector <int> gnd, int gegz) {
+    Student(string gname, string gsurname, vector <double> gnd, int gegz) {
         name = gname;
         surname = gsurname;
         nd = gnd;
@@ -56,6 +56,7 @@ public:
     operator const char* () const { return cstring; }
 
 public:
+
     void countAVG() {
 
         double sum = accumulate(nd.begin(), nd.end(), 0);
@@ -65,7 +66,21 @@ public:
         galutinis = nd_vid + (egz * 0.6);
     }
 
-    void setStudent(string get_n, string get_surn, vector <int> get_nd, int get_egz) {
+    double countMED() {
+        sort(nd.begin(), nd.end());
+
+        if (nd.size() % 2 == 0) {
+            galutinis = (nd[nd.size() / 2 - 1] + nd[nd.size() / 2]) / 2;
+        }
+
+        else {
+            galutinis = nd[nd.size() / 2];
+        }
+
+        return galutinis;
+    }
+
+    void setStudent(string get_n, string get_surn, vector <double> get_nd, int get_egz) {
         name = get_n;
         surname = get_surn;
         nd = get_nd;
@@ -79,61 +94,82 @@ public:
     string getSurname() {
         return surname;
     }
-    double getGalutinis() {
-        countAVG();
+
+    double getGalutinisAVG(int ans) {
+        if (ans == 1)
+            countAVG();
+        else if (ans == 2)
+            countMED();
         return galutinis;
     }
+
+    double getGalutinisMED() {
+        countMED();
+        return galutinis;
+    }
+
+
 };
 
 int main()
 {
     string name = "", surname = "";
-    vector <int> nd;
-    int egz = 0, n;
-    Student st1{ "" }, st2;
+    vector <double> nd;
+    int egz = 0, n, avgORmed, mokiniai, gen;
 
-    cout << "Iveskite 1 studento varda: ";
-    cin >> name;
-    cout << "Iveskite 1 studento pavarde: ";
-    cin >> surname;
-    cout << "Iveskite 1 studento namu darbu pazymiu kieki: ";
-    cin >> n;
+    cout << "Iveskite mokiniu kieki: ";
+    cin >> mokiniai;
 
-    for (int i = 0; i < n; i++) {
-        cout << "Iveskite " << i + 1 << " pazymi: ";
-        int temp;
-        cin >> temp;
-        nd.push_back(temp);
+    Student* st = new Student[mokiniai];
+
+
+    for (int i = 1; i <= mokiniai; i++) {
+        cout << "Iveskite " << i << " studento varda : ";
+        cin >> name;
+        cout << "Iveskite " << i << "  studento pavarde: ";
+        cin >> surname;
+        cout << "Iveskite " << i << " studento namu darbu pazymiu kieki: ";
+        cin >> n;
+
+        cout << "Jeigu norite ivesti pazymius rankiniu budu studentui nr. " << i << " spauskite 1" << endl << "Jeigu norite sugeneruoti atsitiktinius pazymius studentui nr. " << i << "  spauskite 2" << endl;
+        cin >> gen;
+        
+        if (gen == 1) {
+            for (int j = 1; j <= n; j++) {
+                cout << "Iveskite " << j << " pazymi: ";
+                int temp;
+                cin >> temp;
+                nd.push_back(temp);
+            }
+            cout << "Iveskite " << i << " studento egzamino vertinimo pazymi: ";
+            cin >> egz;
+        }
+        else if (gen == 2) {
+            for (int j = 1; j <= n; j++) {
+                nd.push_back(rand() % 10 + 1);
+            }
+
+            egz = rand() % 10 + 1;
+        }
+
+        st[i-1].setStudent(name, surname, nd, egz);
+        nd.clear();
     }
 
-    cout << "Iveskite 1 studento egzamino vertinimo pazymi: ";
-    cin >> egz;
+    cout << "Jeigu norite skaiciuoti pagal Vidurki spauskite 1" << endl << "Jeigu norite skaiciuoti pagal Mediana spauskite 2" << endl;
+    cin >> avgORmed;
 
-    st1.setStudent(name, surname, nd, egz);
-    nd.clear();
-
-    cout << "Iveskite 2 studento varda: ";
-    cin >> name;
-    cout << "Iveskite 2 studento pavarde: ";
-    cin >> surname;
-    cout << "Iveskite 2 studento namu darbu pazymiu kieki: ";
-    cin >> n;
-
-    for (int i = 0; i < n; i++) {
-        cout << "Iveskite " << i + 1 << " pazymi: ";
-        int temp;
-        cin >> temp;
-        nd.push_back(temp);
+    if (avgORmed == 1 || avgORmed == 2) {
+        cout << endl << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas";
+        if (avgORmed == 1) cout << setw(5) << left << "Galutinis (Vid.)" << endl;
+        else if (avgORmed == 2) cout << setw(5) << left << "Galutinis (Med.)" << endl;
+        cout << "--------------------------------------------------\n";
+        for (int i = 1; i <= mokiniai; i++) {
+            cout << setw(15) << left << st[i-1].getSurname() << setw(15) << left << st[i-1].getName() << setw(5) << left << fixed << setprecision(2) << st[i-1].getGalutinisAVG(avgORmed) << left << endl;
+        }
     }
 
-    cout << "Iveskite 2 studento egzamino vertinimo pazymi: ";
-    cin >> egz;
+    else cout << "ARBA 1 ARBA 2!";
 
-    st2.setStudent(name, surname, nd, egz);
-
-    cout << endl << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Vid.)" << endl;
-    cout << "--------------------------------------------------\n";
-    cout << setw(15) << left << st1.getSurname() << setw(15) << left << st1.getName() << setw(5) << left << fixed << setprecision(2) << st1.getGalutinis() << endl;
-    cout << setw(15) << left << st2.getSurname() << setw(15) << left << st2.getName() << setw(5) << left << st2.getGalutinis() << endl;
-
+    return 0;
 }
