@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <vector>
 #include <numeric>
+#include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -113,61 +115,157 @@ public:
 
 int main()
 {
-    string name = "", surname = "";
+    vector <string> vname, vsurname;
+    vector <int> vegz;
     vector <double> nd;
-    int egz = 0, n, avgORmed, mokiniai, gen;
+    vector <vector <double>> vnd;
+    string name = "", surname = "";
+    int egz = 0, n, avgORmed, mokiniai = 0, gen, choice, file;
 
-    cout << "Iveskite mokiniu kieki: ";
-    cin >> mokiniai;
+    cout << "Noredami duomenis nuskaityti is konsoles spauskite 1, noredami duomenis nuskaityti is failo, spauskite 2: ";
+    cin >> file;
 
-    Student* st = new Student[mokiniai];
+    if (file == 1) {
+        cout << "Iveskite mokiniu kieki: ";
+        cin >> mokiniai;
 
+        Student* st = new Student[mokiniai];
 
-    for (int i = 1; i <= mokiniai; i++) {
-        cout << "Iveskite " << i << " studento varda : ";
-        cin >> name;
-        cout << "Iveskite " << i << "  studento pavarde: ";
-        cin >> surname;
-        cout << "Iveskite " << i << " studento namu darbu pazymiu kieki: ";
-        cin >> n;
+        cout << "Jeigu norite ivesti duomenis rankiniu budu spauskite 1, jei norite, kad duomenys butu generuojami, spauskite 2: ";
+        cin >> choice;
 
-        cout << "Jeigu norite ivesti pazymius rankiniu budu studentui nr. " << i << " spauskite 1" << endl << "Jeigu norite sugeneruoti atsitiktinius pazymius studentui nr. " << i << "  spauskite 2" << endl;
-        cin >> gen;
-        
-        if (gen == 1) {
-            for (int j = 1; j <= n; j++) {
-                cout << "Iveskite " << j << " pazymi: ";
-                int temp;
-                cin >> temp;
+        if (choice == 1) {
+
+            for (int i = 1; i <= mokiniai; i++) {
+                cout << "Iveskite " << i << " studento varda : ";
+                cin >> name;
+                cout << "Iveskite " << i << "  studento pavarde: ";
+                cin >> surname;
+                cout << "Iveskite " << i << " studento namu darbu pazymiu kieki: ";
+                cin >> n;
+
+                vname.push_back(name);
+                vsurname.push_back(surname);
+
+                cout << "Jeigu norite ivesti pazymius rankiniu budu studentui nr. " << i << " spauskite 1" << endl << "Jeigu norite sugeneruoti atsitiktinius pazymius studentui nr. " << i << "  spauskite 2" << endl;
+                cin >> gen;
+
+                if (gen == 1) {
+                    for (int j = 1; j <= n; j++) {
+                        cout << "Iveskite " << j << " pazymi: ";
+                        int temp;
+                        cin >> temp;
+                        nd.push_back(temp);
+                    }
+                    cout << "Iveskite " << i << " studento egzamino vertinimo pazymi: ";
+                    cin >> egz;
+                    vegz.push_back(egz);
+                }
+                else if (gen == 2) {
+                    for (int j = 1; j <= n; j++)
+                        nd.push_back(rand() % 10 + 1);
+                    vnd.push_back(nd);
+                    egz = rand() % 10 + 1;
+                    vegz.push_back(egz);
+                }
+
+                nd.clear();
+            }
+
+            
+
+            for (int i = 0; i < mokiniai; i++) {
+                st[i].setStudent(vname[i], vsurname[i], vnd[i], vegz[i]);
+            }
+        }
+
+        else if (choice == 2) {
+            stringstream ss;
+
+            cout << "Kiek namu darbu pazymiu tures visi mokiniai? ";
+            cin >> n;
+
+            for (int i = 1; i <= mokiniai; i++) {
+
+                ss << "Vardas" << i;
+                name = ss.str();
+                ss.str(string());
+                ss << "Pavarde" << i;
+                surname = ss.str();
+                ss.str(string());
+
+                for (int j = 0; j < mokiniai; j++)
+                    nd.push_back(rand() % 10 + 1);
+
+                egz = rand() % 10 + 1;
+
+                st[i - 1].setStudent(name, surname, nd, egz);
+
+                nd.clear();
+            }
+
+        }
+
+        cout << "Jeigu norite skaiciuoti pagal Vidurki spauskite 1" << endl << "Jeigu norite skaiciuoti pagal Mediana spauskite 2" << endl;
+        cin >> avgORmed;
+
+        if (avgORmed == 1 || avgORmed == 2) {
+            cout << endl << setw(20) << left << "Pavarde" << setw(20) << left << "Vardas";
+            if (avgORmed == 1) cout << setw(5) << left << "Galutinis (Vid.)" << endl;
+            else if (avgORmed == 2) cout << setw(5) << left << "Galutinis (Med.)" << endl;
+            cout << "--------------------------------------------------\n";
+            for (int i = 1; i <= mokiniai; i++) {
+                cout << setw(20) << left << st[i - 1].getSurname() << setw(20) << left << st[i - 1].getName() << setw(5) << left << fixed << setprecision(2) << st[i - 1].getGalutinisAVG(avgORmed) << left << endl;
+            }
+        }
+    }
+
+    else if (file == 2) { // read from file
+        string txt;
+
+        ifstream kursiokai("../kursiokai.txt");
+
+        for (int i = 0; getline(kursiokai, txt); i++) {
+            mokiniai++;
+            int temp;
+
+            kursiokai >> name >> surname;
+            vname.push_back(name);
+            vsurname.push_back(surname);
+            
+            for (int j = 0; j < 5; j++) {
+                kursiokai >> temp;
                 nd.push_back(temp);
             }
-            cout << "Iveskite " << i << " studento egzamino vertinimo pazymi: ";
-            cin >> egz;
+            vnd.push_back(nd);
+
+            kursiokai >> egz;
+            vegz.push_back(egz);
+
+            cout << i + 1 << endl;
         }
-        else if (gen == 2) {
-            for (int j = 1; j <= n; j++) {
-                nd.push_back(rand() % 10 + 1);
+        // eof
+
+        Student* st = new Student[mokiniai];
+
+        for (int i = 0; i < mokiniai; i++) 
+            st[i].setStudent(vname[i], vsurname[i], vnd[i], vegz[i]);
+
+        cout << "Jeigu norite skaiciuoti pagal Vidurki spauskite 1" << endl << "Jeigu norite skaiciuoti pagal Mediana spauskite 2" << endl;
+        cin >> avgORmed;
+
+        if (avgORmed == 1 || avgORmed == 2) {
+            cout << endl << setw(20) << left << "Pavarde" << setw(20) << left << "Vardas";
+            if (avgORmed == 1) cout << setw(5) << left << "Galutinis (Vid.)" << endl;
+            else if (avgORmed == 2) cout << setw(5) << left << "Galutinis (Med.)" << endl;
+            cout << "--------------------------------------------------\n";
+            for (int i = 1; i <= mokiniai; i++) {
+                cout << setw(20) << left << st[i - 1].getSurname() << setw(20) << left << st[i - 1].getName() << setw(5) << left << fixed << setprecision(2) << st[i - 1].getGalutinisAVG(avgORmed) << left << endl;
             }
-
-            egz = rand() % 10 + 1;
-        }
-
-        st[i-1].setStudent(name, surname, nd, egz);
-        nd.clear();
-    }
-
-    cout << "Jeigu norite skaiciuoti pagal Vidurki spauskite 1" << endl << "Jeigu norite skaiciuoti pagal Mediana spauskite 2" << endl;
-    cin >> avgORmed;
-
-    if (avgORmed == 1 || avgORmed == 2) {
-        cout << endl << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas";
-        if (avgORmed == 1) cout << setw(5) << left << "Galutinis (Vid.)" << endl;
-        else if (avgORmed == 2) cout << setw(5) << left << "Galutinis (Med.)" << endl;
-        cout << "--------------------------------------------------\n";
-        for (int i = 1; i <= mokiniai; i++) {
-            cout << setw(15) << left << st[i-1].getSurname() << setw(15) << left << st[i-1].getName() << setw(5) << left << fixed << setprecision(2) << st[i-1].getGalutinisAVG(avgORmed) << left << endl;
         }
     }
+
+    
 
     else cout << "ARBA 1 ARBA 2!";
 
