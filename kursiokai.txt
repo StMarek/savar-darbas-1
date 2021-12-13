@@ -1,0 +1,4 @@
+﻿Vardas      Pavarde      ND1  ND2   ND3  ND4  ND5  Egzaminas
+Vardas2     Pavarde2    8    9     10   6    10   9
+Vardas1     Pavarde1    7    10    8    5    4    6
+Vardas3     Pavarde3    7    10    8    2    4    6
