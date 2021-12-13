@@ -7,6 +7,7 @@
 #include <numeric>
 #include <sstream>
 #include <fstream>
+#include <chrono>
 
 using namespace std;
 
@@ -172,7 +173,7 @@ int main()
                 nd.clear();
             }
 
-            
+
 
             for (int i = 0; i < mokiniai; i++) {
                 st[i].setStudent(vname[i], vsurname[i], vnd[i], vegz[i]);
@@ -222,8 +223,107 @@ int main()
 
     else if (file == 2) { // read from file
         string txt;
+        int filegen;
+
+        cout << "Ar norite sugeneruoti failus? (1 - Taip, 2 - Ne): ";
+        cin >> filegen;
+
+        if (filegen == 1) {
+            ofstream kursiokai1k("../kursiokai_1k.txt");
+            ofstream kursiokai10k("../kursiokai_10k.txt");
+            ofstream kursiokai100k("../kursiokai_100k.txt");
+            ofstream kursiokai1m("../kursiokai_1m.txt");
+            ofstream kursiokai10m("../kursiokai_10m.txt");
+
+            auto start = chrono::high_resolution_clock::now();
+            auto st = start;
+
+            for (int i = 1; i <= 1000; i++) {
+                kursiokai1k << "Vardas" << i << " Pavarde" << i;
+                for (int j = 0; j < 6; j++)
+                    kursiokai1k << " " << rand() % 10 + 1;
+                kursiokai1k << endl;
+            }
+
+            kursiokai1k.close();
+
+            auto end = chrono::high_resolution_clock::now();
+            chrono::duration<double> diff = end - start;
+
+            cout << "1k duomenu irasymas i faila uztruko: " << diff.count() << " s\n";
+
+            start = chrono::high_resolution_clock::now();
+            st = start;
+
+            for (int i = 1; i <= 10000; i++) {
+                kursiokai10k << "Vardas" << i << " Pavarde" << i;
+                for (int j = 0; j < 6; j++)
+                    kursiokai10k << " " << rand() % 10 + 1;
+                kursiokai10k << endl;
+            }
+
+            kursiokai10k.close();
+
+            end = chrono::high_resolution_clock::now();
+            diff = end - start;
+
+            cout << "10k duomenu irasymas i faila uztruko: " << diff.count() << " s\n";
+
+            start = chrono::high_resolution_clock::now();
+            st = start;
+
+            for (int i = 1; i <= 100000; i++) {
+                kursiokai100k << "Vardas" << i << " Pavarde" << i;
+                for (int j = 0; j < 6; j++)
+                    kursiokai100k << " " << rand() % 10 + 1;
+                kursiokai100k << endl;
+            }
+
+            kursiokai100k.close();
+
+            end = chrono::high_resolution_clock::now();
+            diff = end - start;
+
+            cout << "100k duomenu irasymas i faila uztruko: " << diff.count() << " s\n";
+
+            start = chrono::high_resolution_clock::now();
+            st = start;
+
+            for (int i = 1; i <= 1000000; i++) {
+                kursiokai1m << "Vardas" << i << " Pavarde" << i;
+                for (int j = 0; j < 6; j++)
+                    kursiokai1m << " " << rand() % 10 + 1;
+                kursiokai1m << endl;
+            }
+
+            kursiokai1m.close();
+
+            end = chrono::high_resolution_clock::now();
+            diff = end - start;
+
+            cout << "1m duomenu irasymas i faila uztruko: " << diff.count() << " s\n";
+
+            start = chrono::high_resolution_clock::now();
+            st = start;
+
+            for (int i = 1; i <= 10000000; i++) {
+                kursiokai10m << "Vardas" << i << " Pavarde" << i;
+                for (int j = 0; j < 6; j++)
+                    kursiokai10m << " " << rand() % 10 + 1;
+                kursiokai10m << endl;
+            }
+
+            kursiokai10m.close();
+
+            end = chrono::high_resolution_clock::now();
+            diff = end - start;
+
+            cout << "10m duomenu irasymas i faila uztruko: " << diff.count() << " s\n";
+        }
 
         ifstream kursiokai("../kursiokai.txt");
+
+
 
         for (int i = 0; getline(kursiokai, txt); i++) {
             mokiniai++;
@@ -232,7 +332,7 @@ int main()
             kursiokai >> name >> surname;
             vname.push_back(name);
             vsurname.push_back(surname);
-            
+
             for (int j = 0; j < 5; j++) {
                 kursiokai >> temp;
                 nd.push_back(temp);
@@ -245,10 +345,11 @@ int main()
             cout << i + 1 << endl;
         }
         // eof
+        kursiokai.close();
 
         Student* st = new Student[mokiniai];
 
-        for (int i = 0; i < mokiniai; i++) 
+        for (int i = 0; i < mokiniai; i++)
             st[i].setStudent(vname[i], vsurname[i], vnd[i], vegz[i]);
 
         cout << "Jeigu norite skaiciuoti pagal Vidurki spauskite 1" << endl << "Jeigu norite skaiciuoti pagal Mediana spauskite 2" << endl;
@@ -265,7 +366,7 @@ int main()
         }
     }
 
-    
+
 
     else cout << "ARBA 1 ARBA 2!";
 
